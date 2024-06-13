@@ -65,6 +65,8 @@ public class User {
         this.roles = roles;
     }
 
+    public Integer getId() { return id; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

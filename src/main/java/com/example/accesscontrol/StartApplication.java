@@ -1,7 +1,7 @@
 package com.example.accesscontrol;
 
 import com.example.accesscontrol.model.User;
-import com.example.accesscontrol.service.UserService;
+import com.example.accesscontrol.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -9,20 +9,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class StartApplication implements CommandLineRunner {
     @Autowired
-    private UserService service;
-
+    private UserRepository repository;
     @Override
     public void run(String... args) throws Exception {
-        for (int i = 1; i <= 5; i++) {
-            service.save(new User("user" + i));
-        }
+        User user = new User();
+        user.setName("Sidney");
+        user.setUsername("SSperandio");
+        user.setPassword("123456");
+        user.setRoles(null);
+        repository.save(user);
 
-        User user2 = service.findByUsername("user2");
-        user2.setName("MAIN");
-        service.update(user2);
-
-        for (User user: service.findAll()) {
-            System.out.println(user);
+        for (User u: repository.findAll()) {
+            System.out.println(u);
         }
     }
 }
