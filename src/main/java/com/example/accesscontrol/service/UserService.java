@@ -1,6 +1,8 @@
 package com.example.accesscontrol.service;
 
 import com.example.accesscontrol.model.User;
+import com.example.accesscontrol.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,27 +11,33 @@ import java.util.List;
 @Service
 public class UserService {
     //Simulating a database with the user table
-    private List<User> database = new ArrayList<>();
+    //private List<User> database = new ArrayList<>();
 
-    public void save(User user) {
+    @Autowired
+    private UserRepository repository;
+
+    public void saveUser(User user) {
         System.out.println("Saving user");
-        database.add(user);
+        repository.save(user);
     }
 
-    public void update(User user) {
+    public void updateUser(Integer id, User user) {
         System.out.println("Updating user");
-        int index = database.indexOf(user);
-        database.set(index, user);
+        User updatedUser = repository.findById(id).orElse(null);
+        updatedUser.setName(user.getName());
+        updatedUser.setUsername(user.getUsername());
+        updatedUser.setPassword(user.getPassword());
+        updatedUser.setRoles(user.getRoles());
+        repository.save(updatedUser);
     }
 
-    public User findByUsername(String username) {
+    public User findUserByUsername(String username) {
         System.out.println("Searching for user by login");
-        int index = database.indexOf(new User(username));
-        return database.get(index);
+        return repository.findByUsername(username);
     }
 
-    public List<User> findAll() {
+    public List<User> findAllUsers() {
         System.out.println("Listing all users");
-        return database;
+        return repository.findAll();
     }
 }
