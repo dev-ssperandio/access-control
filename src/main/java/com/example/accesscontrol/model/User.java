@@ -33,14 +33,16 @@ public class User {
         this.username = username;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-
+    public User(String name, String username, String password, List<String> roles) {
         this.name = name;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
     }
+
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
 
     public String getUsername() {
         return username;

@@ -16,19 +16,19 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         System.out.println("Saving user");
-        repository.save(user);
+        return repository.save(user);
     }
 
-    public void updateUser(Integer id, User user) {
+    public User updateUser(Integer id, User user) {
         System.out.println("Updating user");
         User updatedUser = repository.findById(id).orElse(null);
         updatedUser.setName(user.getName());
         updatedUser.setUsername(user.getUsername());
         updatedUser.setPassword(user.getPassword());
         updatedUser.setRoles(user.getRoles());
-        repository.save(updatedUser);
+        return repository.save(updatedUser);
     }
 
     public User findUserByUsername(String username) {
@@ -39,5 +39,10 @@ public class UserService {
     public List<User> findAllUsers() {
         System.out.println("Listing all users");
         return repository.findAll();
+    }
+
+    public void deleteUserById(Integer id) {
+        System.out.println("Deleting user with Id: " + id);
+        repository.deleteById(id);
     }
 }
