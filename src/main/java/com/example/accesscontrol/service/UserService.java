@@ -21,14 +21,14 @@ public class UserService {
         return repository.save(user);
     }
 
-    public User updateUser(Integer id, User user) {
+    public User updateUser(/*Integer id*/ User user) {
         System.out.println("Updating user");
-        User updatedUser = repository.findById(id).orElse(null);
+        /*User updatedUser = repository.findById(id).orElse(null);
         updatedUser.setName(user.getName());
         updatedUser.setUsername(user.getUsername());
         updatedUser.setPassword(user.getPassword());
-        updatedUser.setRoles(user.getRoles());
-        return repository.save(updatedUser);
+        updatedUser.setRoles(user.getRoles());*/
+        return repository.save(user);
     }
 
     public User findUserByUsername(String username) {
