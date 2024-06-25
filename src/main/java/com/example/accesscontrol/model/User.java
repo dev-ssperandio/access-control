@@ -1,6 +1,8 @@
 package com.example.accesscontrol.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,12 +15,18 @@ public class User {
     @Column(name = "id_user")
     private Integer id;
 
+    @NotBlank
+    @Size(min = 3, max = 50)
     @Column(length = 50, nullable = false)
     private String name;
 
+    @NotBlank
+    @Size(min = 6, max = 20)
     @Column(length = 20, nullable = false)
     private String username;
 
+    @NotBlank
+    @Size(min = 8, max = 10)
     @Column(length = 10, nullable = false)
     private String password;
 

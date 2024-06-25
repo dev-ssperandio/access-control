@@ -12,29 +12,28 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService service;
-
-    @GetMapping
-    public List<User> list() {
-        return service.findAllUsers();
-    }
-
-    @PostMapping
-    public void save(@RequestBody User user) {
+    @PostMapping("/users")
+    public void post(@RequestBody User user) {
         service.saveUser(user);
     }
 
-    @PutMapping
-    public void update(@RequestBody User user) {
+    @PutMapping("/users")
+    public void put(@RequestBody User user) {
         service.updateUser(user);
     }
 
-    @GetMapping("/{username}")
-    public User find(@PathVariable("/username") String username) {
+    @GetMapping("/users")
+    public List<User> getAll() {
+        return service.findAllUsers();
+    }
+
+    @GetMapping("/users/{username}")
+    public User getOne(@PathVariable("username") String username) {
         return service.findUserByUsername(username);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable("/id") Integer id) {
+    @DeleteMapping("/users/{id}")
+    public void delete(@PathVariable("id") Integer id) {
         service.deleteUserById(id);
     }
 }
