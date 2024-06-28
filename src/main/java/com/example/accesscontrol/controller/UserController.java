@@ -12,6 +12,7 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService service;
+
     @PostMapping("/users")
     public void post(@RequestBody User user) {
         service.saveUser(user);
