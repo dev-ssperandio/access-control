@@ -1,5 +1,7 @@
 package com.example.accesscontrol.config;
 
+import com.example.accesscontrol.service.SecurityDatabaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,59 +9,73 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
+    /*@Autowired
+    private SecurityDatabaseService securityDatabaseService;
+*/
+    /*@Autowired
+    public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(securityDatabaseService).passwordEncoder(passwordEncoder());
+    }*/
+
+    private final SecurityDatabaseService securityDatabaseService;
+
+    @Autowired
+    public WebSecurityConfig(SecurityDatabaseService securityDatabaseService) {
+        this.securityDatabaseService = securityDatabaseService;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                                .anyRequest().authenticated()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/managers").hasAnyRole("MANAGERS")
+                        .requestMatchers("/users").hasAnyRole("USERS", "MANAGERS")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
-                                .loginPage("/login")
-                                .permitAll()
+                        .loginPage("/login")
+                        .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll);
+                .logout(logout -> logout
+                        .permitAll()
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                )
+                .httpBasic(withDefaults());
+                //.formLogin(withDefaults())
+                //.logout(LogoutConfigurer::permitAll);
 
         return http.build();
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("SSperandio")
-                .password(bCryptPasswordEncoder.encode("53nh4"))
-                .roles("USER")
-                .build());
-        manager.createUser(User.withUsername("admin")
-                .password(bCryptPasswordEncoder.encode("adminPass"))
-                .roles("MANAGER")
-                .build());
-
-        return manager;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsService userDetailsService) throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(bCryptPasswordEncoder);
+                .userDetailsService(securityDatabaseService)
+                .passwordEncoder(passwordEncoder());
 
         return authenticationManagerBuilder.build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 
